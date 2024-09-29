@@ -1,6 +1,4 @@
-def main():
-    print("Hello from bayesian-backend!")
-
+from optimizer import optimize_pid
 
 if __name__ == "__main__":
-    main()
+    optimize_pid(n_trials=50)
