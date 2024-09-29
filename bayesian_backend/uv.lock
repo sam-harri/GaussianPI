@@ -20,7 +20,6 @@ name = "bayesian-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "matlabengine" },
     { name = "matplotlib" },
     { name = "optuna" },
     { name = "polars" },
@@ -29,7 +28,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "matlabengine", specifier = ">=24.2.1" },
     { name = "matplotlib", specifier = ">=3.9.2" },
     { name = "optuna", specifier = ">=4.0.0" },
     { name = "polars", specifier = ">=1.8.2" },
@@ -345,12 +343,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/96/0c/620c1fb3661858c0e37eb3cbffd8c6f732a67cd97296f725789679801b31/MarkupSafe-2.1.5-cp312-cp312-win32.whl", hash = "sha256:8590b4ae07a35970728874632fed7bd57b26b0102df2d2b233b6d9d82f6c62ad", size = 16572 },
     { url = "https://files.pythonhosted.org/packages/3f/14/c3554d512d5f9100a95e737502f4a2323a1959f6d0d01e0d0997b35f7b10/MarkupSafe-2.1.5-cp312-cp312-win_amd64.whl", hash = "sha256:823b65d8706e32ad2df51ed89496147a42a2a6e01c13cfb6ffb8b1e92bc910bb", size = 17127 },
 ]
-
-[[package]]
-name = "matlabengine"
-version = "24.2.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9f/28/f6d07ba360327319b22a6a6d3dc35ccd9aad7c8b856bcb7d7f7063bd2fbc/matlabengine-24.2.1.tar.gz", hash = "sha256:bbba206cce4ca258d444123e747f7f8372bd33901dd1510dedc3da8393f3b1a3", size = 18888 }
 
 [[package]]
 name = "matplotlib"
