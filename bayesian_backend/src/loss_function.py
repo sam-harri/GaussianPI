@@ -1,21 +1,29 @@
-# src/loss_function.py
+import logging
 
-"""Module to calculate the loss function."""
+import numpy as np
+import polars as pl
 
-from typing import List
 
-def calculate_loss(setpoint: List[float], actual: List[float]) -> float:
+def compute_loss(df: pl.DataFrame) -> float:
     """
-    Calculates the integral of the absolute error between setpoint and actual data.
+    Computes the loss as the integral of the absolute error between actual and setpoint data.
 
-    Args:
-        setpoint (List[float]): The desired setpoint timeseries data.
-        actual (List[float]): The actual timeseries data from the simulation.
+    Parameters
+    ----------
+        df : pl.DataFrame
+            DataFrame containing 'Time', 'Actual', and 'Setpoint' columns.
 
-    Returns:
-        float: The calculated loss value.
+    Returns
+    -------
+        float: Computed loss value.
     """
-    error = [abs(s - a) for s, a in zip(setpoint, actual)]
-    loss = sum(error)  # Assuming uniform time steps
+    try:
+        error = (df["Actual"] - df["Setpoint"]).abs()
+        time = df["Time"]
 
-    return loss
+        # Use the trapezoidal rule for numerical integration
+        loss = np.trapz(error.to_numpy(), x=time.to_numpy())
+        return loss
+    except Exception as e:
+        logging.error(f"Error computing loss: {e}")
+        raise
