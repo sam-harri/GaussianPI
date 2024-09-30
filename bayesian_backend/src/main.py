@@ -20,7 +20,7 @@ def main():
     # Initialize variables
     model_name = "Lab_1_Closed_Loop_v1"
     data_dir = "data/"
-    study_name = "test1"
+    study_name = "test3"
 
     # create data_dir/study_name directory if it does not exist
     if not os.path.exists(f"{data_dir}/{study_name}"):

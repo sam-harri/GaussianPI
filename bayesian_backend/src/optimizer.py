@@ -1,12 +1,18 @@
 import logging
 from typing import Any, Dict, Optional
 import time
+import os
 
 import optuna
 import polars as pl
+from plotly.io import show, write_html
+from dotenv import load_dotenv
 
 from matlab_interface import run_simulation
 from loss_function import compute_loss
+
+
+load_dotenv()
 
 
 def objective(
@@ -66,7 +72,17 @@ def objective(
         new_row = pl.DataFrame(
             {"Trial": [trial.number], "KC": [KC], "KI": [KI], "Loss": [loss]}
         )
-        results_df = pl.read_csv(f"{trial_data_dir}/optimization_history.csv")
+        results_df = pl.read_csv(
+            f"{trial_data_dir}/optimization_history.csv",
+            schema={
+                "Trial": pl.Int64,
+                "KC": pl.Float64,
+                "KI": pl.Float64,
+                "Loss": pl.Float64,
+            },
+        )
+        logging.info(f"Results DataFrame: {results_df.head()}")
+        logging.info(f"Results DataFrame: {new_row.head()}")
         results_df = pl.concat([results_df, new_row], how="vertical")
 
         # Save the DataFrame to CSV
@@ -113,7 +129,12 @@ def run_optimization(
     Returns:
         Dict[str, Any]: Dictionary containing the best parameters and loss.
     """
-    study = optuna.create_study(direction="minimize", study_name=study_name)
+    study = optuna.create_study(
+        direction="minimize",
+        study_name=study_name,
+        storage=os.getenv("DATABASE_URL"),
+        load_if_exists=True,
+    )
 
     # Create and save empty results DataFrame
     results_df = pl.DataFrame(
@@ -140,5 +161,9 @@ def run_optimization(
     # Get the best parameters and loss
     best_params = study.best_params
     best_loss = study.best_value
+
+    fig = optuna.visualization.plot_contour(study, params=["KC", "KI"])
+    show(fig)
+    write_html(fig, f"{data_dir}/{study_name}/contour_plot.html")
 
     return {"best_params": best_params, "best_loss": best_loss}
