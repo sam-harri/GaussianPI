@@ -1,6 +1,6 @@
 import logging
-import os
 import sys
+import os
 
 import matplotlib.pyplot as plt
 
@@ -12,28 +12,30 @@ def main():
     # Configure logging
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s",
+        format="[%(levelname).1s %(asctime)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[logging.StreamHandler(sys.stdout)],
     )
 
     # Initialize variables
     model_name = "Lab_1_Closed_Loop_v1"
     data_dir = "data/"
+    study_name = "test1"
 
-    # Ensure necessary directories exist
-    os.makedirs("data/simulation_runs", exist_ok=True)
-    os.makedirs("results", exist_ok=True)
+    # create data_dir/study_name directory if it does not exist
+    if not os.path.exists(f"{data_dir}/{study_name}"):
+        os.makedirs(f"{data_dir}/{study_name}")
 
     # Initialize MATLAB engine
     try:
         eng = initialize_matlab_engine(matlab_path="../matlab")
     except Exception as e:
-        logging.error(f"Initialization error: {e}")
+        logging.exception(f"Initialization error: {e}")
         sys.exit(1)
 
     # Run optimization
     optimization_result = run_optimization(
-        eng, model_name, n_trials=50, results_csv_path=data_dir
+        eng, model_name, n_trials=5, data_dir=data_dir, study_name=study_name
     )
 
     best_params = optimization_result["best_params"]
@@ -46,14 +48,14 @@ def main():
     # Rerun simulation with best parameters
     try:
         logging.info("Running simulation with best parameters...")
-        df_best = run_simulation(eng, model_name, best_params["KC"], best_params["KI"])
+        df_best = run_simulation(
+            eng, model_name, best_params["KC"], best_params["KI"], -1
+        )
 
         # Save best simulation data
-        filename = (
-            f"data/best_KC-{best_params['KC']:.4f}_KI-{best_params['KI']:.4f}.csv"
+        df_best.write_csv(
+            f"{data_dir}/{study_name}/best_KC-{best_params['KC']:.4f}_KI-{best_params['KI']:.4f}.csv"
         )
-        df_best.write_csv(filename)
-        logging.info(f"Best result data saved to '{filename}'.")
 
         # Plot results
         plt.figure()
@@ -65,7 +67,7 @@ def main():
         plt.legend()
         plt.show()
     except Exception as e:
-        logging.error(f"Error during final simulation or plotting: {e}")
+        logging.exception(f"Error during final simulation or plotting: {e}")
 
 
 if __name__ == "__main__":
