@@ -25,5 +25,5 @@ def compute_loss(df: pl.DataFrame) -> float:
         loss = np.trapz(error.to_numpy(), x=time.to_numpy())
         return loss
     except Exception as e:
-        logging.error(f"Error computing loss: {e}")
+        logging.exception(f"Error computing loss: {e}")
         raise
