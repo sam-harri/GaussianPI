@@ -28,12 +28,16 @@ def initialize_matlab_engine(matlab_path: str = ".") -> matlab.engine.MatlabEngi
         )
         return eng
     except Exception as e:
-        logging.error(f"Error initializing MATLAB engine: {e}")
+        logging.exception(f"Error initializing MATLAB engine: {e}")
         raise
 
 
 def run_simulation(
-    eng: matlab.engine.MatlabEngine, model_name: str, KC: float, KI: float
+    eng: matlab.engine.MatlabEngine,
+    model_name: str,
+    KC: float,
+    KI: float,
+    trial_num: int,
 ) -> pl.DataFrame:
     """
     Runs the Simulink model with the given KC and KI parameters.
@@ -48,6 +52,8 @@ def run_simulation(
         Proportional gain for PID controller.
     KI : float
         Integral gain for PID controller.
+    trial_num : int
+        Trial number for the simulation.
 
     Returns
     -------
@@ -59,14 +65,21 @@ def run_simulation(
 
         # Load the model if not already loaded
         loaded_models = eng.eval("Simulink.allBlockDiagrams", nargout=1)
-        if model_name not in loaded_models:
+        logging.info(f"Loaded models: {loaded_models}")
+        if loaded_models == []:
             eng.load_system(model_name)
             logging.info(f"Loaded Simulink model '{model_name}'.")
 
         # Run the simulation
+        logging.info(
+            f"Starting Simulation for Trial {trial_num}, KC={KC:.4f}, KI={KI:.4f}"
+        )
         eng.eval(f"out = sim('{model_name}')", nargout=0)
         eng.eval("data = struct(out)", nargout=0)
         data: Dict[Any, Any] = eng.workspace["data"]
+        logging.info(
+            f"Completed Simulation for for Trial {trial_num}, KC={KC:.4f}, KI={KI:.4f}"
+        )
 
         # Extract simulation data
         actual_data = np.array(data["Data"]["ActualSimOut"]).flatten()
@@ -86,8 +99,12 @@ def run_simulation(
             {"Time": time_data, "Actual": actual_data, "Setpoint": setpoint_data}
         )
 
+        df = df.filter(pl.col("Time") >= 7000)
+
         return df
 
     except Exception as e:
-        logging.error(f"Simulation error with KC={KC}, KI={KI}: {e}")
+        logging.exception(
+            f"Simulation error for Trial {trial_num}, with KC={KC}, KI={KI}: {e}"
+        )
         raise
