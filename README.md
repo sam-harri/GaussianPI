@@ -46,7 +46,7 @@ Here:
 
 ### Multi Node Training
 
-1. **Database Connection String
+1. **Database Connection String**
 
 A database is required to store and share optimization results across multiple nodes. You need to provide the connection string in a `.env` file located at the root of the `bayesian_backend` directory. The environment variable should be named `DATABASE_URL`
 
@@ -149,7 +149,7 @@ uv venv
 source .venv/bin/activate
 ```
 
-3. **Run the optimization script**
+4. **Run the optimization script**
 ```bash
 uv run src/main.py
 ```
