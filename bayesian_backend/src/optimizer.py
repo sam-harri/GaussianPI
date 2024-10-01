@@ -81,8 +81,6 @@ def objective(
                 "Loss": pl.Float64,
             },
         )
-        logging.info(f"Results DataFrame: {results_df.head()}")
-        logging.info(f"Results DataFrame: {new_row.head()}")
         results_df = pl.concat([results_df, new_row], how="vertical")
 
         # Save the DataFrame to CSV
@@ -132,8 +130,8 @@ def run_optimization(
     study = optuna.create_study(
         direction="minimize",
         study_name=study_name,
-        storage=os.getenv("DATABASE_URL"),
-        load_if_exists=True,
+        # storage=os.getenv("DATABASE_URL"),
+        # load_if_exists=True,
     )
 
     # Create and save empty results DataFrame
