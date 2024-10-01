@@ -1,7 +1,6 @@
 import logging
 from typing import Any, Dict, Optional
 import time
-import os
 
 import optuna
 import polars as pl
@@ -39,7 +38,7 @@ def objective(
         float: Loss value to minimize.
     """
     KC = trial.suggest_float("KC", 0.05, 0.5)
-    KI = trial.suggest_float("KI", 0.005, 0.05)
+    KI = trial.suggest_float("KI", 0.003, 0.05)
 
     try:
         logging.info(
