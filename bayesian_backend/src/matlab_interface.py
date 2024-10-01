@@ -60,31 +60,36 @@ def run_simulation(
         pl.DataFrame: DataFrame containing 'Time', 'Actual', and 'Setpoint' data.
     """
     try:
-        eng.workspace["KC"] = KC
-        eng.workspace["KI"] = KI
+        eng.eval(f"load_system('{model_name}')", nargout=0)
+        logging.info(f"Loaded Simulink model '{model_name}'.")
 
-        # Load the model if not already loaded
-        loaded_models = eng.eval("Simulink.allBlockDiagrams", nargout=1)
-        logging.info(f"Loaded models: {loaded_models}")
-        if loaded_models == []:
-            eng.load_system(model_name)
-            logging.info(f"Loaded Simulink model '{model_name}'.")
+        # Get model workspace handle
+        eng.eval("mdlWks = get_param(bdroot, 'ModelWorkspace')", nargout=0)
+        test = eng.eval("getVariable(mdlWks,'KC')", nargout=1)
+        logging.info(f"Test: {test}")
 
+        # Assign KC and KI in the model workspace
+        eng.eval(f"assignin(mdlWks, 'KC', {KC})", nargout=0)
+        eng.eval(f"assignin(mdlWks, 'KI', {KI})", nargout=0)
+        test2 = eng.eval("getVariable(mdlWks,'KC')", nargout=1)
+        logging.info(f"Test: {test2}")
+
+        
         # Run the simulation
         logging.info(
             f"Starting Simulation for Trial {trial_num}, KC={KC:.4f}, KI={KI:.4f}"
         )
         eng.eval(f"out = sim('{model_name}')", nargout=0)
         eng.eval("data = struct(out)", nargout=0)
-        data: Dict[Any, Any] = eng.workspace["data"]
+        test: Dict[Any, Any] = eng.workspace["data"]
         logging.info(
             f"Completed Simulation for for Trial {trial_num}, KC={KC:.4f}, KI={KI:.4f}"
         )
-
+        
         # Extract simulation data
-        actual_data = np.array(data["Data"]["ActualSimOut"]).flatten()
-        setpoint_data = np.array(data["Data"]["SetpointSimOut"]).flatten()
-        time_data = np.array(data["Data"]["tout"]).flatten()
+        actual_data = np.array(test["Data"]["ActualSimOut"]).flatten()
+        setpoint_data = np.array(test["Data"]["SetpointSimOut"]).flatten()
+        time_data = np.array(test["Data"]["tout"]).flatten()
 
         # Find the minimum length of the three arrays
         min_length = min(len(actual_data), len(setpoint_data), len(time_data))
