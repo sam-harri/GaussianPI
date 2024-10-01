@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a **PI (Proportional-Integral) Controller** optimization framework using **Bayesian Optimization**. The key goal is to automatically tune the PI controller parameters \( K_C \) and \( K_I \) for a given simulation model, minimizing the control error in closed-loop simulations. The optimization is performed using the **Optuna** library for Bayesian optimization, interfacing with **MATLAB** simulations via Python's `matlab.engine`. 
+This project implements a **PI (Proportional-Integral) Controller** optimization framework using **Bayesian Optimization**. The key goal is to automatically tune the PI controller parameters $\( K_C \)$ and $\( K_I \)$ for a given simulation model, minimizing the control error in closed-loop simulations. The optimization is performed using the **Optuna** library for Bayesian optimization, interfacing with **MATLAB** simulations via Python's `matlab.engine`. 
 
 The framework simulates a variety of bump tests, noise, and perturbations to accurately evaluate the controller's performance. The objective function is based on the integral of the absolute difference between the setpoint and the actual response, calculated as:
 
