@@ -9,22 +9,24 @@ from optimizer import run_optimization
 
 
 def main():
+    # Initialize variables
+    model_name = "Lab_1_Closed_Loop_v1"
+    study_name = "tank1_pi_overnight"
+    
+    # create data_dir/study_name directory if it does not exist
+    if not os.path.exists(f"data/{study_name}"):
+        os.makedirs(f"data/{study_name}")
+    
     # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="[%(levelname).1s %(asctime)s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[logging.StreamHandler(sys.stdout)],
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler(f"data/{study_name}/logfile.log"),
+        ],
     )
-
-    # Initialize variables
-    model_name = "Lab_1_Closed_Loop_v1"
-    data_dir = "data/"
-    study_name = "FirstTankPI_Run3"
-
-    # create data_dir/study_name directory if it does not exist
-    if not os.path.exists(f"{data_dir}/{study_name}"):
-        os.makedirs(f"{data_dir}/{study_name}")
 
     # Initialize MATLAB engine
     try:
@@ -35,7 +37,7 @@ def main():
 
     # Run optimization
     optimization_result = run_optimization(
-        eng, model_name, n_trials=3, data_dir=data_dir, study_name=study_name
+        eng, model_name, n_trials=50, study_name=study_name
     )
 
     best_params = optimization_result["best_params"]
@@ -54,7 +56,7 @@ def main():
 
         # Save best simulation data
         df_best.write_csv(
-            f"{data_dir}/{study_name}/best_KC-{best_params['KC']:.4f}_KI-{best_params['KI']:.4f}.csv"
+            f"data/{study_name}/best_KC-{best_params['KC']:.4f}_KI-{best_params['KI']:.4f}.csv"
         )
 
         # Plot results
