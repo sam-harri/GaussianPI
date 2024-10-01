@@ -74,7 +74,6 @@ def run_simulation(
         test2 = eng.eval("getVariable(mdlWks,'KC')", nargout=1)
         logging.info(f"Test: {test2}")
 
-        
         # Run the simulation
         logging.info(
             f"Starting Simulation for Trial {trial_num}, KC={KC:.4f}, KI={KI:.4f}"
@@ -85,7 +84,7 @@ def run_simulation(
         logging.info(
             f"Completed Simulation for for Trial {trial_num}, KC={KC:.4f}, KI={KI:.4f}"
         )
-        
+
         # Extract simulation data
         actual_data = np.array(test["Data"]["ActualSimOut"]).flatten()
         setpoint_data = np.array(test["Data"]["SetpointSimOut"]).flatten()
