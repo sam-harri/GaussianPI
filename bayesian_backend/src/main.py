@@ -20,7 +20,7 @@ def main():
     # Initialize variables
     model_name = "Lab_1_Closed_Loop_v1"
     data_dir = "data/"
-    study_name = "test3"
+    study_name = "FirstTankPI_Run3"
 
     # create data_dir/study_name directory if it does not exist
     if not os.path.exists(f"{data_dir}/{study_name}"):
@@ -35,7 +35,7 @@ def main():
 
     # Run optimization
     optimization_result = run_optimization(
-        eng, model_name, n_trials=5, data_dir=data_dir, study_name=study_name
+        eng, model_name, n_trials=3, data_dir=data_dir, study_name=study_name
     )
 
     best_params = optimization_result["best_params"]
