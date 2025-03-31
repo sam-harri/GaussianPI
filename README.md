@@ -20,15 +20,12 @@ The model parameters and experiment settings can be adjusted by modifying the fo
 
 ```python
 def main():
-    # Initialize variables
     model_name = "Lab_1_Closed_Loop_v1"
     study_name = "tank1_pi_overnight"
-    
-    # create data_dir/study_name directory if it does not exist
+
     if not os.path.exists(f"data/{study_name}"):
         os.makedirs(f"data/{study_name}")
-    
-    # Configure logging
+
     logging.basicConfig(
         level=logging.INFO,
         format="[%(levelname).1s %(asctime)s] %(message)s",
@@ -71,8 +68,8 @@ def run_optimization(
     study = optuna.create_study(
         direction="minimize",
         study_name=study_name,
-        storage=os.getenv("DATABASE_URL"),  # Load database URL from .env
-        load_if_exists=True,  # Continue from existing study if available
+        storage=os.getenv("DATABASE_URL"),
+        load_if_exists=True,
     )
 ```
 
